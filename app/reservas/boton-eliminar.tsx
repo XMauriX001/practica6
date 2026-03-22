@@ -5,9 +5,6 @@ import { useState } from "react";
 import { botonPeligro } from "@/app/lib/estilos"; 
  
  
- 
-14 
- 
 export function BotonEliminarReserva({ id }: { id: number }) { 
   const [error, setError] = useState<string | null>(null); 
  

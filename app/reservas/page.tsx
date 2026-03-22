@@ -1,16 +1,26 @@
 import { prisma } from "@/app/lib/prisma"; 
 import Link from "next/link"; 
-import { BotonEliminarReserva } from "./boton-eliminar"; 
 import { tarjeta } from "@/app/lib/estilos"; 
+import { BotonCancelarReserva } from "./boton-cancelar";
+import { BotonConfirmarReserva } from "./boton-confirmar";
+import { BotonEliminarReserva } from "./boton-eliminar";
  
 const etiquetaEstado: Record<string, string> = { 
   pendiente: "bg-yellow-50 text-yellow-700 border-yellow-200", 
   confirmada: "bg-green-50 text-green-700 border-green-200", 
   cancelada: "bg-gray-100 text-gray-500 border-gray-200", 
 }; 
- 
-export default async function PaginaReservas() { 
-  const reservas = await prisma.reserva.findMany({ 
+
+type estadoReserva = {
+  searchParams: Promise<{estado?: string}>;
+}
+
+export default async function PaginaReservas({searchParams}: estadoReserva) {
+  const params = await searchParams;
+  const estadoFiltro = params.estado;
+
+  const reservas = await prisma.reserva.findMany({
+    where: estadoFiltro ? {estado: estadoFiltro} : {},
     orderBy: { fecha: "asc" }, 
     include: { servicio: true }, 
   }); 
@@ -27,7 +37,51 @@ export default async function PaginaReservas() {
           Nueva reserva 
         </Link> 
       </div> 
- 
+
+       {/* Filtros */}
+      <div className="flex gap-2 mb-4">
+        <Link
+          href="/reservas"
+          className={`px-3 py-1 rounded text-sm ${
+            !estadoFiltro
+              ? "bg-black text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Todas
+        </Link>
+        <Link
+          href="/reservas?estado=pendiente"
+          className={`px-3 py-1 rounded text-sm ${
+            estadoFiltro === "pendiente"
+              ? "bg-yellow-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Pendientes
+        </Link>
+        <Link
+          href="/reservas?estado=confirmada"
+          className={`px-3 py-1 rounded text-sm ${
+            estadoFiltro === "confirmada"
+              ? "bg-green-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Confirmadas
+        </Link>
+        <Link
+          href="/reservas?estado=cancelada"
+          className={`px-3 py-1 rounded text-sm ${
+            estadoFiltro === "cancelada"
+              ? "bg-gray-500 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Canceladas
+        </Link>
+      </div>
+
       {reservas.length === 0 ? ( 
         <p className="text-sm text-gray-400">No hay reservas registradas.</p> 
       ) : ( 
@@ -52,7 +106,9 @@ export default async function PaginaReservas() {
                   {reserva.estado} 
                 </span> 
               </div> 
-              <BotonEliminarReserva id={reserva.id} /> 
+              <BotonEliminarReserva id={reserva.id} />
+              <BotonCancelarReserva id={reserva.id} />
+              <BotonConfirmarReserva id={reserva.id} />
             </li> 
           ))} 
         </ul> 
