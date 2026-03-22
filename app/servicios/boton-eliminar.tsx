@@ -19,9 +19,6 @@ export function BotonEliminarServicio({ id }: { id: number }) {
       <button onClick={manejarClick} className={botonPeligro}> 
         Eliminar 
       </button> 
- 
-11 
- 
       {error && <p className="text-xs text-red-400 mt-1">{error}</p>} 
     </div> 
   ); 

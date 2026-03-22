@@ -42,8 +42,6 @@ export function FormularioReserva({ servicios }: { servicios: Servicio[] }) {
         <label className={label}>Fecha y hora</label> 
         <input name="fecha" type="datetime-local" className={input} /> 
  
-16 
- 
         {estado.errores?.fecha && ( 
           <p className="text-xs text-red-500 mt-1">{estado.errores.fecha}</p> 
         )} 
